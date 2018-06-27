@@ -38,13 +38,21 @@ const selectPort = () => {
 const createPyProc = () => {
   let script = getScriptPath()
   let port = '' + selectPort()
-
+  
   if (guessPackaged()) {
-    pyProc = require('child_process').execFile(script, [port])
+    pyProc = require('child_process').execFile(script, [port],
+      (error, stdout, stderr) => {
+        if (error) {
+          throw error;
+        }
+        console.log(stdout);
+      })
   } else {
-    pyProc = require('child_process').spawn('python', [script, port])
+    pyProc = require('child_process').spawn('python', [script, port], {
+      "stdio": ['ignore', process.stdout, process.stderr]
+    })
   }
- 
+
   if (pyProc != null) {
     //console.log(pyProc)
     console.log('child process success on port ' + port)
